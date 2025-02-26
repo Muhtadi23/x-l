@@ -7,29 +7,28 @@ const TableTwo = () => {
     const [visibleColumn, setVisibleColumn] = useState([])
 
     useEffect(() => {
-        fetch(`http://localhost:4000/employees`)
+        fetch("https://jsonplaceholder.typicode.com/comments")
             .then(res => res.json())
             .then(data => {
-                setEmployees(data.employees)
-                if (setEmployees.length > 0) {
-                    // is setting the initial columns to be displayed in the table.
-                    // its more efficient to get the column by using data.employees[0] by Object.keys to extract fetched data
-                    setVisibleColumn(Object.keys(data.employees[0]))
+                setEmployees(data);
+                if (data.length > 0) {
+                    setVisibleColumn(Object.keys(data[0]));
                 }
-            })
+            });
+    }, []);
 
-    }, [])
-
+    // to get the columns from the fetched data
+    // Ensures that column names are extracted dynamically from the first data object.
     const columns = employees.length > 0 ? Object.keys(employees[0]) : []
 
-
+    // Updates selectedCheckbox whenever a checkbox is clicked.
+    // this function will handle the checkbox change and update the selected checkbox state with spread operator
     const handleCheckBoxChange = (event) => {
         const { name, checked } = event.target;
         setSelectedCheckbox((previousSelectedCheckbox) => ({
             ...previousSelectedCheckbox,
             [name]: checked
         }))
-
     }
 
     const handleSearch = e => {
@@ -88,7 +87,6 @@ const TableTwo = () => {
                                     }
                                 </tr>)
                             }
-
                         </tbody>
                     </table>
                 </div>

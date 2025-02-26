@@ -31,6 +31,14 @@ const Table = () => {
 
     return (
         <div className="p-8">
+            <div className="flex flex-col mx-auto justify-center items-center">
+                <h2>Upload you Excel Fine</h2>
+                <form action="">
+                    <input type="file" />
+                    <button>Submit</button>
+                </form>
+
+            </div>
             <form onSubmit={handleSearch} className="flex gap-8 p-8">
                 {columns.map((column) => (
                     <label key={column} className="inline-flex items-center space-x-2">
