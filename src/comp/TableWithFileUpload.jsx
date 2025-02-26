@@ -3,32 +3,35 @@ import * as XLSX from "xlsx";
 
 const TableWithFileUpload = () => {
     const [employees, setEmployees] = useState([]);
-    const [selectedCheckbox, setSelectedCheckbox] = useState({});
     const [visibleColumn, setVisibleColumn] = useState([]);
     const [allColumns, setAllColumns] = useState([]);
+    const [error, setError] = useState("");
 
     const handleFileUpload = (event) => {
         const file = event.target.files[0];
         if (!file) return;
 
-        const validTypes = ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/vnd.ms-excel"];
+        const validTypes = [
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "application/vnd.ms-excel",
+        ];
         if (!validTypes.includes(file.type)) {
-            alert("Invalid file type. Please upload an Excel file.");
+            setError("Invalid file type. Please upload an Excel file.");
             return;
         }
 
+        setError("");
         const reader = new FileReader();
         reader.readAsBinaryString(file);
         reader.onload = (e) => {
             const binaryStr = e.target.result;
             const workbook = XLSX.read(binaryStr, { type: "binary" });
-
             const sheetName = workbook.SheetNames[0];
             const sheet = workbook.Sheets[sheetName];
 
             const data = XLSX.utils.sheet_to_json(sheet);
             if (data.length === 0) {
-                alert("Uploaded file contains no data.");
+                setError("Uploaded file contains no data.");
                 return;
             }
 
@@ -36,57 +39,66 @@ const TableWithFileUpload = () => {
             const columns = Object.keys(data[0]);
             setAllColumns(columns);
             setVisibleColumn(columns);
-            setSelectedCheckbox(columns.reduce((acc, col) => ({ ...acc, [col]: true }), {}));
         };
     };
 
     const handleCheckboxChange = (event) => {
         const { name, checked } = event.target;
-        setSelectedCheckbox(prev => ({ ...prev, [name]: checked }));
-    };
-
-    const handleSearch = (e) => {
-        e.preventDefault();
-        const selectedColumns = Object.keys(selectedCheckbox).filter(key => selectedCheckbox[key]);
-        setVisibleColumn(selectedColumns.length > 0 ? selectedColumns : allColumns);
+        setVisibleColumn((prev) =>
+            checked ? [...prev, name] : prev.filter((col) => col !== name)
+        );
     };
 
     return (
-        <div className="p-8">
-            <div>
-                <h2>Upload your Excel File</h2>
-                <input type="file" accept=".xlsx, .xls" onChange={handleFileUpload} />
+        <div className="p-6 max-w-5xl mx-auto">
+            <div className="shadow-lg rounded-lg p-6">
+                <h2 className="text-2xl font-semibold text-center mb-4">Upload your Excel File</h2>
+                <input
+                    type="file"
+                    accept=".xlsx, .xls"
+                    onChange={handleFileUpload}
+                    className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
+                    aria-label="Upload Excel file"
+                />
+                {error && <p className="text-red-500 mt-2">{error}</p>}
             </div>
 
             {employees.length > 0 && (
-                <form onSubmit={handleSearch} className="flex flex-wrap gap-4 p-8">
-                    {allColumns.map((column) => (
-                        <label key={column} className="inline-flex items-center space-x-2">
-                            <input
-                                type="checkbox"
-                                checked={selectedCheckbox[column] || false}
-                                onChange={handleCheckboxChange}
-                                name={column}
-                            />
-                            <span>{column}</span>
-                        </label>
-                    ))}
-                    <button type="submit" className="btn">Filter</button>
-                </form>
+                <div className="mt-6  shadow-lg rounded-lg p-6">
+                    <h3 className="text-lg font-medium  mb-3">Select Columns to Display</h3>
+                    <div className="flex flex-wrap gap-3">
+                        {allColumns.map((column) => (
+                            <label key={column} className="flex items-center space-x-2 px-3 py-1 rounded-md">
+                                <input
+                                    type="checkbox"
+                                    checked={visibleColumn.includes(column)}
+                                    onChange={handleCheckboxChange}
+                                    name={column}
+                                    className="accent-blue-500"
+                                />
+                                <span className="">{column}</span>
+                            </label>
+                        ))}
+                    </div>
+                </div>
             )}
 
-            {visibleColumn.length > 0 && (
-                <div className="overflow-x-auto">
-                    <table className="table table-xs">
+            {visibleColumn.length > 0 && employees.length > 0 && (
+                <div className="mt-6 shadow-lg rounded-lg p-4 overflow-x-auto">
+                    <table className="w-full min-w-max border  rounded-lg overflow-hidden">
                         <thead>
-                            <tr>
-                                {visibleColumn.map((column) => <th key={column}>{column}</th>)}
+                            <tr className="">
+                                {visibleColumn.map((column) => (
+                                    <th key={column} className="py-3 px-4 text-left">{column}</th>
+                                ))}
                             </tr>
                         </thead>
                         <tbody>
                             {employees.map((employee, index) => (
-                                <tr key={index}>
-                                    {visibleColumn.map((key) => <td key={key}>{employee[key]}</td>)}
+                                <tr key={index} className="border-b border-gray-200 hover:bg-gray-100">
+                                    {visibleColumn.map((key) => (
+                                        <td key={key} className="py-2 px-4">{employee[key]}</td>
+                                    ))}
                                 </tr>
                             ))}
                         </tbody>
