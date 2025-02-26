@@ -1,3 +1,4 @@
+import Footer from "./comp/Footer"
 import Table from "./comp/Table"
 import TableTwo from "./comp/TableTwo"
 import TableWithFileUpload from "./comp/TableWithFileUpload"
@@ -9,7 +10,11 @@ function App() {
     <>
       {/* <Table></Table> */}
       {/* <TableTwo /> */}
-      <TableWithFileUpload />
+      <div className="h-screen">
+        <TableWithFileUpload />
+      </div>
+
+      <Footer />
     </>
   )
 }

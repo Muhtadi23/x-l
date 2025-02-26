@@ -36,7 +36,7 @@ const TableWithFileUpload = () => {
             }
 
             setEmployees(data);
-            const columns = Object.keys(data[0]);
+            const columns = Object.keys(data[0]).filter(col => col.trim() && col !== "_EMPTY");
             setAllColumns(columns);
             setVisibleColumn(columns);
         };
@@ -85,7 +85,7 @@ const TableWithFileUpload = () => {
 
             {visibleColumn.length > 0 && employees.length > 0 && (
                 <div className="mt-6 shadow-lg rounded-lg p-4 overflow-x-auto">
-                    <table className="w-full min-w-max border  rounded-lg overflow-hidden">
+                    <table className="w-full min-w-max border rounded-lg overflow-hidden">
                         <thead>
                             <tr className="">
                                 {visibleColumn.map((column) => (
@@ -95,7 +95,7 @@ const TableWithFileUpload = () => {
                         </thead>
                         <tbody>
                             {employees.map((employee, index) => (
-                                <tr key={index} className="border-b border-gray-200 hover:bg-gray-100">
+                                <tr key={index} className="border-b border-gray-200 hover:bg-gray-100 hover:text-black hover:text-semibold">
                                     {visibleColumn.map((key) => (
                                         <td key={key} className="py-2 px-4">{employee[key]}</td>
                                     ))}
