@@ -112,6 +112,5 @@ Include your license information here.
 
 ## Support
 For any issues or questions, please contact:
-- **Email**: your-email@example.com
-- **GitHub Issues**: [GitHub Repository](<repository-url>)
+- **Email**: miranmuhtadi121@example.com
 
